@@ -1,5 +1,6 @@
 # tests a layer 3 network connection via ping to a designated IP address
 # version 1.0	20250225.1/mz
+# add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run connecttest.rsc" interval=3
 
 # future changes:
 # add: check if next hop (router or modem) is online, e.g. via pinging its LAN interface
