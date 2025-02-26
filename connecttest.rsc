@@ -1,12 +1,10 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.0	20250225.2/mz
+# version 1.0	20250227.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 
 # future changes:
 # add: check if next hop (router or modem) is online, e.g. via pinging its LAN interface
 # add: fallback destination IP adress(es) if next hop is offline
-# add: encode part of the log msg to provide more clean find/filter results in log  ( :put [:convert from=hex "574c414e2d4f7574616765" to=raw] )
-#                                                                                   ( easier:  :put "\31\32\33" )
 # add: include destination IP in log msgs
 # change: "WAN" to "Connection" or so .. make it rather universally usable 
 # change: write only one line to log if only one packet dropped
@@ -18,7 +16,9 @@
 :global isOutage
 :global outageStart
 :global lostPackets
+
 :local DestIP 83.216.32.162 ; # change to your needs! 
+:local msgHexStr "\2D\2D\20\57\4C\41\4E\20\63\6F\6E\6E\65\63\74\69\6F\6E"; # for cleaner find in logs
 
 :local pingResult [/ping $DestIP count=1];
 #:log info "Ping result: $pingResult"
@@ -32,7 +32,7 @@
         :set isOutage true
         :set outageStart [/system clock get time]
         :set lostPackets 1; # first package already sent! 
-        :log info "-- WAN outage detected! $outageStart !"
+        :log info "$msgHexStr lost at $outageStart !"
     } else={
         #:log info "before incrementing lostPackets"
         :set lostPackets ($lostPackets + 1)
@@ -44,7 +44,7 @@
         #:log info "no more outage!"
         :set isOutage false
         :local outageEnd [/system clock get time]
-        :log info "-- WAN reconnected at $outageEnd. Duration: $lostPackets seconds. Lost packets: $lostPackets"
+        :log info "$msgHexStr restored at $outageEnd. $lostPackets packets dropped."
     }
 }
 #:log info "End of Script - isOutage value: $isOutage"
