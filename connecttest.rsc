@@ -6,12 +6,13 @@
 # add: check if next hop (router or modem) is online, e.g. via pinging its LAN interface
 # add: fallback destination IP adress(es) if next hop is offline
 # add: encode part of the log msg to provide more clean find/filter results in log  ( :put [:convert from=hex "574c414e2d4f7574616765" to=raw] )
-easier:  :put "\32"   *facepalm @ Copilot!*
+#                                                                                   ( easier:  :put "\31\32\33" )
 # add: include destination IP in log msgs
 # change: "WAN" to "Connection" or so .. make it rather universally usable 
 # change: write only one line to log if only one packet dropped
-# consider: minimum packet loss before writing to log at all
+# consider: minimum packet loss before writing to log at all - aka "threshold"
 # consider: writing log msgs to separate log (file?)
+# consider: a mode switch which let the script itself run in a loop and won't need a scheduler
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
 
 :global isOutage
