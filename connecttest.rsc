@@ -20,6 +20,16 @@
 :local DestIP 83.216.32.162 ; # change to your needs! 
 :local msgHexStr "\2D\2D\20\57\4C\41\4E\20\63\6F\6E\6E\65\63\74\69\6F\6E"; # for cleaner find in logs
 
+:local FrevString do={      # reverse given string
+    :local inpStr $1
+    :local revdStr ""
+    :for i from=([:len $inpStr] - 1) to=0 do={
+#        :set revdStr [:pick $inpStr $i] . $revdStr     # got this recommended but won't work!   :/
+        :set revdStr ($revdStr . [:pick $inpStr $i])
+ }
+    :return $revdStr
+}
+
 :local pingResult [/ping $DestIP count=1];
 #:log info "Ping result: $pingResult"
 #:log info "Current isOutage value before checking: $isOutage"
