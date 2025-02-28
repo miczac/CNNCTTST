@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.0	20250227.1/mz
+# version 1.0-20250227.2/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 
 # future changes:
@@ -14,17 +14,27 @@
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
 
 # setting up:
-:local DestIP 83.216.32.162   ; # change to your needs! 
+:local DestIP 83.216.32.162   ; # change IP address to check to your needs! 
 :local NextHopIP 192.168.0.1  ; # insert the next hop's IP towards $DestIP here!
 
-:local msgHexStr "\2D\2D\20\57\4C\41\4E\20\63\6F\6E\6E\65\63\74\69\6F\6E"; # for cleaner find in logs
+:local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
 
 :global isOutage
 :global outageStart
 :global lostPackets
 
 :local nextHopOn [/ping $NextHopIP count=1]
-:if ($nextHopOn = 1) do={ # main
+:if ($nextHopOn = 1) do={ # continue testing $DestIP in main section
+
+:local FrevString do={      # reverses given string
+    :local inpStr $1
+    :local revdStr ""
+    :for i from=([:len $inpStr] - 1) to=0 do={
+        :set revdStr ($revdStr . [:pick $inpStr $i])
+ }
+    :return $revdStr
+}
+:local logMsgStr [$FrevString $revdMsgStr]
 
 :local pingResult [/ping $DestIP count=1];
 #:log info "Ping result: $pingResult"
@@ -38,7 +48,7 @@
         :set isOutage true
         :set outageStart [/system clock get time]
         :set lostPackets 1; # first package already sent! 
-        :log info "$msgHexStr lost at $outageStart !"
+        :log info "$logMsgStr lost at $outageStart !"
     } else={
         #:log info "before incrementing lostPackets"
         :set lostPackets ($lostPackets + 1)
@@ -50,11 +60,10 @@
         #:log info "no more outage!"
         :set isOutage false
         :local outageEnd [/system clock get time]
-        :log info "$msgHexStr restored at $outageEnd. $lostPackets packets dropped."
+        :log info "$logMsgStr restored at $outageEnd. $lostPackets packets dropped."
     }
 }
 } else={    # end main
-    :global WTExit  "WT exited"
-    :log info "WT exited!"
+        :global NextHopERROR ([/system clock get time] . ": next hop $NextHopIP not reachable!"); # msg as global variable saves flooding the router's log
 }
 #:log info "End of Script - isOutage value: $isOutage"
