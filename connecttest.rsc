@@ -1,20 +1,21 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.0-20250227.2/mz
+# version 1.0-20250228.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 
 # future changes:
-# add: check if next hop (router or modem) is online, e.g. via pinging its LAN interface
 # add: fallback destination IP adress(es) if next hop is offline
 # add: include destination IP in log msgs
 # change: "WAN" to "Connection" or so .. make it rather universally usable 
-# change: write only one line to log if only one packet dropped
+# change: write only one line to log if only one packet was dropped
 # consider: minimum packet loss before writing to log at all - aka "threshold"
+# consider: changing all debug msgs to log to debug msgs to global variables. Would need some management.
 # consider: writing log msgs to separate log (file?)
 # consider: a mode switch which let the script itself run in a loop and won't need a scheduler
+# consider: better names for local and global variable, esp. for debugging!
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
 
 # setting up:
-:local DestIP 83.216.32.162   ; # change IP address to check to your needs! 
+:local DestIP 83.216.32.162   ; # change IP address you want to check to your needs! 
 :local NextHopIP 192.168.0.1  ; # insert the next hop's IP towards $DestIP here!
 
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
@@ -63,7 +64,8 @@
         :log info "$logMsgStr restored at $outageEnd. $lostPackets packets dropped."
     }
 }
-} else={    # end main
-        :global NextHopERROR ([/system clock get time] . ": next hop $NextHopIP not reachable!"); # msg as global variable saves flooding the router's log
+} else={    # end main / would need indenting of above main section
+        :global NextHopERROR ([/system clock get time] . ": next hop $NextHopIP not reachable!");
+              # msg as global variable saves flooding the router's log
 }
 #:log info "End of Script - isOutage value: $isOutage"
