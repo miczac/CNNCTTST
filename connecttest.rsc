@@ -13,12 +13,18 @@
 # consider: a mode switch which let the script itself run in a loop and won't need a scheduler
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
 
+# setting up:
+:local DestIP 83.216.32.162   ; # change to your needs! 
+:local NextHopIP 192.168.0.1  ; # insert the next hop's IP towards $DestIP here!
+
+:local msgHexStr "\2D\2D\20\57\4C\41\4E\20\63\6F\6E\6E\65\63\74\69\6F\6E"; # for cleaner find in logs
+
 :global isOutage
 :global outageStart
 :global lostPackets
 
-:local DestIP 83.216.32.162 ; # change to your needs! 
-:local msgHexStr "\2D\2D\20\57\4C\41\4E\20\63\6F\6E\6E\65\63\74\69\6F\6E"; # for cleaner find in logs
+:local nextHopOn [/ping $NextHopIP count=1]
+:if ($nextHopOn = 1) do={ # main
 
 :local pingResult [/ping $DestIP count=1];
 #:log info "Ping result: $pingResult"
@@ -46,5 +52,9 @@
         :local outageEnd [/system clock get time]
         :log info "$msgHexStr restored at $outageEnd. $lostPackets packets dropped."
     }
+}
+} else={    # end main
+    :global WTExit  "WT exited"
+    :log info "WT exited!"
 }
 #:log info "End of Script - isOutage value: $isOutage"
