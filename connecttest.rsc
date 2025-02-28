@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.0	20250227.1/mz
+# version 1.0-20250227.2/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 
 # future changes:
@@ -18,17 +18,17 @@
 :global lostPackets
 
 :local DestIP 83.216.32.162 ; # change to your needs! 
-:local msgHexStr "\2D\2D\20\57\4C\41\4E\20\63\6F\6E\6E\65\63\74\69\6F\6E"; # for cleaner find in logs
+:local revdMsgStr "noitcennoc NAW --"; # for cleaner find in logs
 
-:local FrevString do={      # reverse given string
+:local FrevString do={      # reverses given string
     :local inpStr $1
     :local revdStr ""
     :for i from=([:len $inpStr] - 1) to=0 do={
-#        :set revdStr [:pick $inpStr $i] . $revdStr     # got this recommended but won't work!   :/
         :set revdStr ($revdStr . [:pick $inpStr $i])
  }
     :return $revdStr
 }
+:local logMsgStr [$FrevString $revdMsgStr]
 
 :local pingResult [/ping $DestIP count=1];
 #:log info "Ping result: $pingResult"
@@ -42,7 +42,7 @@
         :set isOutage true
         :set outageStart [/system clock get time]
         :set lostPackets 1; # first package already sent! 
-        :log info "$msgHexStr lost at $outageStart !"
+        :log info "$logMsgStr lost at $outageStart !"
     } else={
         #:log info "before incrementing lostPackets"
         :set lostPackets ($lostPackets + 1)
@@ -54,7 +54,7 @@
         #:log info "no more outage!"
         :set isOutage false
         :local outageEnd [/system clock get time]
-        :log info "$msgHexStr restored at $outageEnd. $lostPackets packets dropped."
+        :log info "$logMsgStr restored at $outageEnd. $lostPackets packets dropped."
     }
 }
 #:log info "End of Script - isOutage value: $isOutage"
