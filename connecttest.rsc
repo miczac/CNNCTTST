@@ -12,6 +12,7 @@
 # consider: writing log msgs to separate log (file?)
 # consider: a mode switch which let the script itself run in a loop and won't need a scheduler
 # consider: better names for local and global variable, esp. for debugging!
+# consider: un-setting (removing) nextHopERROR, when next hop is back online 
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
 
 # setting up below:  v - - - - - - - - - - v
@@ -71,7 +72,7 @@
     }
 }
 } else={    # end main / would need indenting of above main section
-        :global NextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!");
+        :global CNNCTTSTnextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!");
               # msg as global variable saves flooding the router's log
 }
 #:log info "End of Script - CNNCTTSTisOutage value: $CNNCTTSTisOutage"
