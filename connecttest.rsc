@@ -22,7 +22,7 @@
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
 # setting up above:  ^ - - - - - - - - - - ^
 
-:global isOutage
+:global CNNCTTSTisOutage
 :global outageStart
 :global lostPackets
 
@@ -41,14 +41,14 @@
 
 :local pingResult [/ping $CNNCTTSTdestIP count=1];
 #:log info "Ping result: $pingResult"
-#:log info "Current isOutage value before checking: $isOutage"
+#:log info "Current CNNCTTSTisOutage value before checking: $CNNCTTSTisOutage"
 
 :if ($pingResult = 0) do={  
     #:log info "Ping failed"
-    #:log info "isOutage value before inner check: $isOutage"
-    :if (!$isOutage) do={         # an unset boolean returns 'false'!
+    #:log info "CNNCTTSTisOutage value before inner check: $CNNCTTSTisOutage"
+    :if (!$CNNCTTSTisOutage) do={         # an unset boolean returns 'false'!
         #:log info "Connection outage detected!"
-        :set isOutage true
+        :set CNNCTTSTisOutage true
         :set outageStart [/system clock get time]
         :set lostPackets 1; # first package already sent! 
         :log info "$logMsgStr lost at $outageStart !"
@@ -58,10 +58,10 @@
     }
 } else={
     #:log info "Ping successful"
-    #:log info "isOutage value before setting to false: $isOutage"
-    :if ($isOutage) do={
+    #:log info "CNNCTTSTisOutage value before setting to false: $CNNCTTSTisOutage"
+    :if ($CNNCTTSTisOutage) do={
         #:log info "no more outage!"
-        :set isOutage false
+        :set CNNCTTSTisOutage false
         :local outageEnd [/system clock get time]
         :log info "$logMsgStr restored at $outageEnd. $lostPackets packets dropped."
     }
@@ -70,4 +70,4 @@
         :global NextHopERROR ([/system clock get time] . ": next hop $NextHopIP not reachable!");
               # msg as global variable saves flooding the router's log
 }
-#:log info "End of Script - isOutage value: $isOutage"
+#:log info "End of Script - CNNCTTSTisOutage value: $CNNCTTSTisOutage"
