@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.0-20250228.1/mz
+# version 1.0-20250302.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 
 # future changes:
@@ -14,18 +14,20 @@
 # consider: better names for local and global variable, esp. for debugging!
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
 
-# setting up:
-:local DestIP 83.216.32.162   ; # change IP address you want to check to your needs! 
-:local NextHopIP 192.168.0.1  ; # insert the next hop's IP towards $DestIP here!
+# setting up below:  v - - - - - - - - - - v
+:global CNNCTTSTdestIP ; # change IP address you want to check to your needs in WinBox's environment! 
+:if ([:typeof $CNNCTTSTdestIP] = "nothing") do={:set CNNCTTSTdestIP 83.216.32.162}; # so, var can be changed outside!
 
+:local NextHopIP 192.168.0.1  ; # insert the next hop's IP towards $CNNCTTSTdestIP here!
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
+# setting up above:  ^ - - - - - - - - - - ^
 
 :global isOutage
 :global outageStart
 :global lostPackets
 
 :local nextHopOn [/ping $NextHopIP count=1]
-:if ($nextHopOn = 1) do={ # continue testing $DestIP in main section
+:if ($nextHopOn = 1) do={ # continue testing $CNNCTTSTdestIP in main section
 
 :local FrevString do={      # reverses given string
     :local inpStr $1
@@ -37,7 +39,7 @@
 }
 :local logMsgStr [$FrevString $revdMsgStr]
 
-:local pingResult [/ping $DestIP count=1];
+:local pingResult [/ping $CNNCTTSTdestIP count=1];
 #:log info "Ping result: $pingResult"
 #:log info "Current isOutage value before checking: $isOutage"
 
