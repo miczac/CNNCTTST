@@ -15,20 +15,19 @@
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
 
 # setting up below:  v - - - - - - - - - - v 
-:local setupDestIP 83.216.32.162
-
-:global CNNCTTSTnextHopIP ; # insert the next hop's IP towards $CNNCTTSTdestIP here!
-:if ([:typeof $CNNCTTSTnextHopIP] = "nothing") do={:set CNNCTTSTnextHopIP 192.168.0.1}; # so, var can be changed outside!
-#                                               change default value here ^^^
-
+:local setupDestIP 83.216.32.162;      # IP-address of host/interface to check
+:local setupNextHopIP 192.168.0.1;     # insert the next hop's IP towards $setupDestIP here!
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
 # setting up above:  ^ - - - - - - - - - - ^
 
-:global CNNCTTSTdestIP ; # change IP address you want to check to your needs in WinBox's environment! 
+:global CNNCTTSTdestIP ; # change IP-addresses you want to check to your needs in WinBox's environment! 
+:global CNNCTTSTnextHopIP
 :global CNNCTTSTisOutage
 :global CNNCTTSToutageStart
 :global CNNCTTSTnumLostPackets
-:if ([:typeof $CNNCTTSTdestIP] = "nothing") do={:set CNNCTTSTdestIP $setupDestIP} # so, var can be changed outside!
+
+:if ([:typeof $CNNCTTSTdestIP] = "nothing") do={:set CNNCTTSTdestIP $setupDestIP}
+:if ([:typeof $CNNCTTSTnextHopIP] = "nothing") do={:set CNNCTTSTnextHopIP $setupNextHopIP}
 
 :local nextHopOn [/ping $CNNCTTSTnextHopIP count=1]
 :if ($nextHopOn = 1) do={ # continue testing $CNNCTTSTdestIP in main section
