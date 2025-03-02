@@ -24,7 +24,7 @@
 
 :global CNNCTTSTisOutage
 :global CNNCTTSToutageStart
-:global lostPackets
+:global CNNCTTSTnumLostPackets
 
 :local nextHopOn [/ping $NextHopIP count=1]
 :if ($nextHopOn = 1) do={ # continue testing $CNNCTTSTdestIP in main section
@@ -50,11 +50,11 @@
         #:log info "Connection outage detected!"
         :set CNNCTTSTisOutage true
         :set CNNCTTSToutageStart [/system clock get time]
-        :set lostPackets 1; # first package already sent! 
+        :set CNNCTTSTnumLostPackets 1; # first package already sent! 
         :log info "$logMsgStr lost at $CNNCTTSToutageStart !"
     } else={
-        #:log info "before incrementing lostPackets"
-        :set lostPackets ($lostPackets + 1)
+        #:log info "before incrementing CNNCTTSTnumLostPackets"
+        :set CNNCTTSTnumLostPackets ($CNNCTTSTnumLostPackets + 1)
     }
 } else={
     #:log info "Ping successful"
@@ -63,7 +63,7 @@
         #:log info "no more outage!"
         :set CNNCTTSTisOutage false
         :local outageEnd [/system clock get time]
-        :log info "$logMsgStr restored at $outageEnd. $lostPackets packets dropped."
+        :log info "$logMsgStr restored at $outageEnd. $CNNCTTSTnumLostPackets packets dropped."
     }
 }
 } else={    # end main / would need indenting of above main section
