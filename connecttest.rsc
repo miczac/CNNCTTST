@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.0-20250302.1/mz
+# version 1.0-20250302.2/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 
 # future changes:
@@ -17,8 +17,12 @@
 # setting up below:  v - - - - - - - - - - v
 :global CNNCTTSTdestIP ; # change IP address you want to check to your needs in WinBox's environment! 
 :if ([:typeof $CNNCTTSTdestIP] = "nothing") do={:set CNNCTTSTdestIP 83.216.32.162}; # so, var can be changed outside!
+#                                         change default value here ^^^
 
-:local NextHopIP 192.168.0.1  ; # insert the next hop's IP towards $CNNCTTSTdestIP here!
+:global CNNCTTSTnextHopIP ; # insert the next hop's IP towards $CNNCTTSTdestIP here!
+:if ([:typeof $CNNCTTSTnextHopIP] = "nothing") do={:set CNNCTTSTnextHopIP 192.168.0.1}; # so, var can be changed outside!
+#                                               change default value here ^^^
+
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
 # setting up above:  ^ - - - - - - - - - - ^
 
@@ -26,7 +30,7 @@
 :global CNNCTTSToutageStart
 :global CNNCTTSTnumLostPackets
 
-:local nextHopOn [/ping $NextHopIP count=1]
+:local nextHopOn [/ping $CNNCTTSTnextHopIP count=1]
 :if ($nextHopOn = 1) do={ # continue testing $CNNCTTSTdestIP in main section
 
 :local FrevString do={      # reverses given string
@@ -67,7 +71,7 @@
     }
 }
 } else={    # end main / would need indenting of above main section
-        :global NextHopERROR ([/system clock get time] . ": next hop $NextHopIP not reachable!");
+        :global NextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!");
               # msg as global variable saves flooding the router's log
 }
 #:log info "End of Script - CNNCTTSTisOutage value: $CNNCTTSTisOutage"
