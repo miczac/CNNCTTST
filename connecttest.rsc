@@ -1,18 +1,22 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.0-20250228.1/mz
+# version 1.0-20250302.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 
-# future changes:
-# add: fallback destination IP adress(es) if next hop is offline
+# to-dos:
+# issue: Booting RouterOS still causes outage msgs despite checking 'next hop'!
+# add: fallback destination IP adress(es) if host/destination IP is offline
 # add: include destination IP in log msgs
-# change: "WAN" to "Connection" or so .. make it rather universally usable 
+# change: make DestIP global to be able to change it on the fly w/o altering the script!
+# change: "WAN" to "Connection" or so .. make it rather universally descriptive 
 # change: write only one line to log if only one packet was dropped
 # consider: minimum packet loss before writing to log at all - aka "threshold"
-# consider: changing all debug msgs to log to debug msgs to global variables. Would need some management.
+# consider: changing all debug msgs to log to global variables. Would probably need some management.
 # consider: writing log msgs to separate log (file?)
-# consider: a mode switch which let the script itself run in a loop and won't need a scheduler
-# consider: better names for local and global variable, esp. for debugging!
+# consider: a mode switch which let the script itself run in a loop and won't need a scheduler. Which wouldn't be as accurate.
+# consider: better names for local and global variables, esp. for debugging!
+# consider: un-setting (removing) nextHopERROR, when next hop is back online
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
+# note: it seems my hAP ac³ has no battery for its clock. So upon boot the time remains largely at the one from shutdown.
 
 # setting up:
 :local DestIP 83.216.32.162   ; # change IP address you want to check to your needs! 
