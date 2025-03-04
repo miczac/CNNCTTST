@@ -1,4 +1,4 @@
-# cncttst
+# CNNCTTST
 MikroTik RouterOS script providing a simple connection test via ICMP.
 
 add to a RouterOS Scheduler using
