@@ -1,6 +1,7 @@
 # tests a layer 3 network connection via ping to a designated IP address
 # version 1.1-20250303.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
+# source it from https://github.com/miczac/CNNCTTST
 
 # to-dos:
 # issue: Booting RouterOS still causes outage msgs despite checking 'next hop'!
@@ -33,15 +34,15 @@
 :if ([:typeof $CNNCTTSTdestIP] = "nothing") do={:set CNNCTTSTdestIP $setupDestIP}
 :if ([:typeof $CNNCTTSTnextHopIP] = "nothing") do={:set CNNCTTSTnextHopIP $setupNextHopIP}
 
-:local nextHopOn [/ping $CNNCTTSTnextHopIP count=1]
-:if ($nextHopOn = 1) do={ # continue testing $CNNCTTSTdestIP in main section
+:local nextHopOK [/ping $CNNCTTSTnextHopIP count=1]
+:if ($nextHopOK = 1) do={ # continue testing $CNNCTTSTdestIP in main section
 
-:local FrevString do={      # reverses given string
+:local FrevString do={      # function, reverses given string
     :local inpStr $1
     :local revdStr ""
     :for i from=([:len $inpStr] - 1) to=0 do={
         :set revdStr ($revdStr . [:pick $inpStr $i])
- }
+    }
     :return $revdStr
 }
 :local logMsgStr [$FrevString $revdMsgStr]
