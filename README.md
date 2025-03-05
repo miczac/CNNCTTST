@@ -1,11 +1,11 @@
 # CNNCTTST
 MikroTik RouterOS script providing a simple connection test via ICMP.
 
-Add to a RouterOS Scheduler using
+Add to a RouterOS Scheduler, for example:
 ```
 /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 ```
-for instance.
+(change parameters to your needs)
 
 ### Parameters to set up in the script
 
