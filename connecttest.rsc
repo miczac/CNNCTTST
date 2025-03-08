@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.1-20250306.1/mz
+# version 1.1-20250308.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # source it from https://github.com/miczac/CNNCTTST
 
@@ -20,7 +20,7 @@
 # note: it seems my hAP ac³ has no battery for its clock. So upon boot the time remains largely at the one from shutdown.
 
 # setting up below:  v - - - - - - - - - - v 
-:local setupDestIP 83.216.32.162;      # IP-address of host/interface to check
+:local setupDestIP    9.9.9.9;         # IP-address of host/interface to check
 :local setupNextHopIP 192.168.0.1;     # insert the next hop's IP towards $setupDestIP here!
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
 # setting up above:  ^ - - - - - - - - - - ^
@@ -36,7 +36,13 @@
 :if ([:typeof $CNNCTTSTisOutage] != "bool") do={:set CNNCTTSTisOutage false}; # init isOutage if not set properly 
 
 :local nextHopOK [/ping $CNNCTTSTnextHopIP count=1]
-:if ($nextHopOK = 1) do={ # continue testing $CNNCTTSTdestIP in main section
+:if ($nextHopOK = 0) do={
+            # msg in a global variable prevents flooding the router's log
+    :global CNNCTTSTnextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!")
+    :quit ; # any further action would be in vain 
+}
+
+# else continue testing $CNNCTTSTdestIP in main section
 
 :local FrevString do={      # function, reverses given string
     :local inpStr $1
@@ -74,9 +80,5 @@
         :local outageEnd [/system clock get time]
         :log info "$logMsgStr restored at $outageEnd. $CNNCTTSTnumLostPackets packets dropped."
     }
-}
-} else={    # end main / would need indenting of above main section
-        :global CNNCTTSTnextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!");
-              # msg as global variable saves flooding the router's log
 }
 #:log info "End of Script - CNNCTTSTisOutage value: $CNNCTTSTisOutage"
