@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.1-20250305.1/mz
+# version 1.1-20250309.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # source it from https://github.com/miczac/CNNCTTST
 
@@ -30,11 +30,19 @@
 :global CNNCTTSToutageStart
 :global CNNCTTSTnumLostPackets
 
-:if ([:typeof $CNNCTTSTdestIP] = "nothing") do={:set CNNCTTSTdestIP $setupDestIP}
-:if ([:typeof $CNNCTTSTnextHopIP] = "nothing") do={:set CNNCTTSTnextHopIP $setupNextHopIP}
+# init global variables just in case they are not set properly
+:if ([:typeof $CNNCTTSTdestIP] != "ip") do={:set CNNCTTSTdestIP $setupDestIP}
+:if ([:typeof $CNNCTTSTnextHopIP] != "ip") do={:set CNNCTTSTnextHopIP $setupNextHopIP}
+:if ([:typeof $CNNCTTSTisOutage] != "bool") do={:set CNNCTTSTisOutage false} 
 
 :local nextHopOK [/ping $CNNCTTSTnextHopIP count=1]
-:if ($nextHopOK = 1) do={ # continue testing $CNNCTTSTdestIP in main section
+:if ($nextHopOK = 0) do={
+            # msg in a global variable prevents flooding the router's log
+    :global CNNCTTSTnextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!")
+    :quit ; # any further action would be in vain 
+}
+
+# else continue testing $CNNCTTSTdestIP in main section
 
 :local FrevString do={      # function, reverses given string
     :local inpStr $1
@@ -72,9 +80,5 @@
         :local outageEnd [/system clock get time]
         :log info "$logMsgStr restored at $outageEnd. $CNNCTTSTnumLostPackets packets dropped."
     }
-}
-} else={    # end main / would need indenting of above main section
-        :global CNNCTTSTnextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!");
-              # msg as global variable saves flooding the router's log
 }
 #:log info "End of Script - CNNCTTSTisOutage value: $CNNCTTSTisOutage"
