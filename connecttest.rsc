@@ -27,6 +27,7 @@
 
 :global CNNCTTSTdestIP ; # change IP-addresses you want to check to your needs in WinBox's environment! 
 :global CNNCTTSTnextHopIP
+:global CNNCTTSTnextHopLostPackets
 :global CNNCTTSTisOutage
 :global CNNCTTSToutageStart
 :global CNNCTTSTnumLostPackets
@@ -40,7 +41,11 @@
 :if ($nextHopOK = 0) do={
             # msg in a global variable prevents flooding the router's log
     :global CNNCTTSTnextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!")
+    :set CNNCTTSTnextHopLostPackets ($CNNCTTSTnextHopLostPackets + 1)
     :quit ; # any further action would be in vain 
+} else={
+    # :log info "$revdMsgStr to next hop restored, $CNNCTTSTnextHopLostPackets packets dropped."
+    :set CNNCTTSTnextHopLostPackets     ; # remove variable
 }
 
 # else continue testing $CNNCTTSTdestIP in main section
