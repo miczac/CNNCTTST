@@ -11,14 +11,14 @@ for instance.
 
 At the top of the script, find the comment line '*setting up below*'
 You'll need to configure three variables:
-- `setupDestIP`  that's the IP-address of host/interface to check/monitor
-- `setupNextHopIP`  that's the  next hop's IP towards $setupDestIP here! 
-- `revdMsgStr`  that's the start of log-msg, but reversed (for cleaner filtering in logs)
+- `setupDestIP`  IP-address of host/interface to check/monitor
+- `setupNextHopIP`  next hop's IP towards $setupDestIP
+- `revdMsgStr`  first few characters of log-msg, but reversed (for cleaner filtering in logs)
 
 ### Parameters to tweak in RouterOS's script environment during runtime
 
 - `CNNCTTSTnextHopIP` - for monitoring the connection to the next hop
-- `CNNCTTSTdestIP` - that's the host or interface to monitor
+- `CNNCTTSTdestIP` - the host or interface to monitor
 
 ### Testing the setup
 

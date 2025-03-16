@@ -10,6 +10,7 @@
 # change: make DestIP global to be able to change it on the fly w/o altering the script!
 # change: "WAN" to "Connection" or so .. make it rather universally descriptive 
 # change: write only one line to log if only one packet was dropped
+# consider: In addition to pinging the next hop check if local interface is up. 
 # consider: minimum packet loss before writing to log at all - aka "threshold"
 # consider: changing all debug msgs to log to global variables. Would probably need some management.
 # consider: writing log msgs to separate log (file?)
