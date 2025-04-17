@@ -40,7 +40,7 @@
 :local nextHopOK [/ping $CNNCTTSTnextHopIP count=1]
 :if ($nextHopOK = 0) do={
             # msg in a global variable prevents flooding the router's log
-    :global CNNCTTSTnextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!")
+    :global CNNCTTSTnextHopERROR ([/system clock get date] . " / " . [/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!")
     :global CNNCTTSTnextHopLostPackets ; # only allocate if connection lost!
     :set CNNCTTSTnextHopLostPackets ($CNNCTTSTnextHopLostPackets + 1)
     :quit ; # any further action would be in vain 
