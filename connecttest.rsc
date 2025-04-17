@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.1-20250310.1/mz
+# version 1.1-20250417.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # source it from https://github.com/miczac/CNNCTTST
 
@@ -10,7 +10,6 @@
 # add: # of dropped packets to nextHop in CNNCTTSTnextHopERROR
 # change: "WAN" to "Connection" or so .. make it rather universally descriptive 
 # change: write only one line to log if only one packet was dropped
-# change: singular/plural differentiation: "1 packet" vs. "23 packets"
 # consider: In addition to pinging the next hop check if local interface is up. 
 # consider: minimum packet loss before writing to log at all - aka "threshold"
 # consider: changing all debug msgs to log to global variables. Would probably need some management.
@@ -41,8 +40,13 @@
 :local nextHopOK [/ping $CNNCTTSTnextHopIP count=1]
 :if ($nextHopOK = 0) do={
             # msg in a global variable prevents flooding the router's log
-    :global CNNCTTSTnextHopERROR ([/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!")
+    :global CNNCTTSTnextHopERROR ([/system clock get date] . " / " . [/system clock get time] . ": next hop $CNNCTTSTnextHopIP not reachable!")
+    :global CNNCTTSTnextHopLostPackets ; # only allocate if connection lost!
+    :set CNNCTTSTnextHopLostPackets ($CNNCTTSTnextHopLostPackets + 1)
     :quit ; # any further action would be in vain 
+} else={
+    # :log info "$revdMsgStr to next hop restored, $CNNCTTSTnextHopLostPackets packets dropped."
+    # :set CNNCTTSTnextHopLostPackets     ; # remove variable # not working if variable not existent
 }
 
 # else continue testing $CNNCTTSTdestIP in main section
