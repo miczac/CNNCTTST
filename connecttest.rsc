@@ -31,11 +31,13 @@
 :global CNNCTTSTisOutage
 :global CNNCTTSToutageStart
 :global CNNCTTSTnumLostPackets
+:global CNNCTTSTlogIndivLine
 
 # init global variables just in case they are not set properly
 :if ([:typeof $CNNCTTSTdestIP] != "ip") do={:set CNNCTTSTdestIP $setupDestIP}
 :if ([:typeof $CNNCTTSTnextHopIP] != "ip") do={:set CNNCTTSTnextHopIP $setupNextHopIP}
 :if ([:typeof $CNNCTTSTisOutage] != "bool") do={:set CNNCTTSTisOutage false} 
+:if ([:typeof $CNNCTTSTlogIndivLine] != "bool") do={:set CNNCTTSTlogIndivLine false} ; # if set 'true' outage start is logged individually
 
 :local nextHopOK [/ping $CNNCTTSTnextHopIP count=1]
 :if ($nextHopOK = 0) do={
@@ -73,7 +75,7 @@
         :set CNNCTTSTisOutage true
         :set CNNCTTSToutageStart ([/system clock get date] . " at " . [/system clock get time])
         :set CNNCTTSTnumLostPackets 1; # first package already sent! 
-        #:log info "$logMsgStr lost at $CNNCTTSToutageStart !"    # skip that line, outage start is logged with the reconnect entry
+        if $CNNCTTSTlogIndivLine do={:log info "$logMsgStr lost on $CNNCTTSToutageStart."}
     } else={
         #:log info "before incrementing CNNCTTSTnumLostPackets"
         :set CNNCTTSTnumLostPackets ($CNNCTTSTnumLostPackets + 1)
