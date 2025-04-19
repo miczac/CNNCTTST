@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.1-20250417.1/mz
+# version 1.1-20250419.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # source it from https://github.com/miczac/CNNCTTST
 
@@ -85,7 +85,9 @@
         #:log info "no more outage!"
         :set CNNCTTSTisOutage false
         :local outageEnd [/system clock get time]
-        :log info "$logMsgStr lost on $CNNCTTSToutageStart, restored at $outageEnd, $CNNCTTSTnumLostPackets packets lost."
+        :local logPacketsStr ""
+        :if ($CNNCTTSTnumLostPackets = 1) do={:set logPacketsStr "packet"} else={:set logPacketsStr "packets"}  # LF only before } of do-branch!
+        :log info "$logMsgStr lost on $CNNCTTSToutageStart, restored at $outageEnd, $CNNCTTSTnumLostPackets $logPacketsStr lost."
     }
 }
 #:log info "End of Script - CNNCTTSTisOutage value: $CNNCTTSTisOutage"
