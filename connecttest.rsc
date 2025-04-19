@@ -86,7 +86,7 @@
         :set CNNCTTSTisOutage false
         :local outageEnd [/system clock get time]
         :local logPacketsStr ""
-        :if ($CNNCTTSTnumLostPackets = 1) do={:set logPacketsStr "packet"} else={:set logPacketsStr "packets"}  # LF only before } of do-branch!
+        :if ($CNNCTTSTnumLostPackets = 1) do={:set logPacketsStr "packet"} else={:set logPacketsStr "packets"}; # LF only before } of do-branch!
         :log info "$logMsgStr lost on $CNNCTTSToutageStart, restored at $outageEnd, $CNNCTTSTnumLostPackets $logPacketsStr lost."
     }
 }
