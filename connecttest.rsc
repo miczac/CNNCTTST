@@ -71,9 +71,9 @@
     :if (!$CNNCTTSTisOutage) do={         # an unset boolean returns 'false'!
         #:log info "Connection outage detected!"
         :set CNNCTTSTisOutage true
-        :set CNNCTTSToutageStart [/system clock get time]
+        :set CNNCTTSToutageStart ([/system clock get date] . " at " . [/system clock get time])
         :set CNNCTTSTnumLostPackets 1; # first package already sent! 
-        :log info "$logMsgStr lost at $CNNCTTSToutageStart !"
+        #:log info "$logMsgStr lost at $CNNCTTSToutageStart !"    # skip that line, outage start is logged with the reconnect entry
     } else={
         #:log info "before incrementing CNNCTTSTnumLostPackets"
         :set CNNCTTSTnumLostPackets ($CNNCTTSTnumLostPackets + 1)
@@ -85,7 +85,7 @@
         #:log info "no more outage!"
         :set CNNCTTSTisOutage false
         :local outageEnd [/system clock get time]
-        :log info "$logMsgStr restored at $outageEnd. $CNNCTTSTnumLostPackets packets dropped."
+        :log info "$logMsgStr lost on $CNNCTTSToutageStart, restored at $outageEnd, $CNNCTTSTnumLostPackets packets lost."
     }
 }
 #:log info "End of Script - CNNCTTSTisOutage value: $CNNCTTSTisOutage"
