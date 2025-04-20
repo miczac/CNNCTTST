@@ -3,6 +3,8 @@
 # add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # source it from https://github.com/miczac/CNNCTTST
 
+# update destination IP adress with something like: (while :; do ssh admin@router ":set CNNCTTSTdestIP $(cat ${HOME}/.piprvalfile)"; sleep 7200; done) &
+
 # to-dos:
 # issue: Booting RouterOS still causes outage msgs despite checking 'next hop'!
 # add: fallback destination IP adress(es) if host/destination IP is offline
