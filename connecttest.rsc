@@ -1,6 +1,7 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.1-20250419.1/mz
-# add to Scheduler with something like: /system/scheduler/add name=ConnTest disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
+# version 1.1-20250421.1/mz
+# add to Scheduler with something like: /system/scheduler/add name=$CNNCTTSTscrptName disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
+# change interval with:  /system/scheduler/set $CNNCTTSTscrptName interval=3s
 # source it from https://github.com/miczac/CNNCTTST
 
 # update destination IP adress with something like: (while :; do ssh admin@router ":set CNNCTTSTdestIP $(cat ${HOME}/.piprvalfile)"; sleep 7200; done) &
@@ -23,6 +24,7 @@
 # note: it seems my hAP ac³ has no battery for its clock. So upon boot the time remains largely at the one from shutdown.
 
 # setting up below:  v - - - - - - - - - - v 
+:local setupScrptName "ConnTest";      # adapt, but this must be used for its corresponding scheduler entry!
 :local setupDestIP    9.9.9.9;         # IP-address of host/interface to check
 :local setupNextHopIP 192.168.0.1;     # insert the next hop's IP towards $setupDestIP here!
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
@@ -34,12 +36,14 @@
 :global CNNCTTSToutageStart
 :global CNNCTTSTnumLostPackets
 :global CNNCTTSTlogIndivLine
+:global CNNCTTSTscrptName
 
 # init global variables just in case they are not set properly
 :if ([:typeof $CNNCTTSTdestIP] != "ip") do={:set CNNCTTSTdestIP $setupDestIP}
 :if ([:typeof $CNNCTTSTnextHopIP] != "ip") do={:set CNNCTTSTnextHopIP $setupNextHopIP}
 :if ([:typeof $CNNCTTSTisOutage] != "bool") do={:set CNNCTTSTisOutage false} 
 :if ([:typeof $CNNCTTSTlogIndivLine] != "bool") do={:set CNNCTTSTlogIndivLine false} ; # if set 'true' outage start is logged individually
+:if ([:typeof $CNNCTTSTscrptName] != "str") do={:set CNNCTTSTscrptName $setupScrptName}
 
 :local nextHopOK [/ping $CNNCTTSTnextHopIP count=1]
 :if ($nextHopOK = 0) do={
@@ -81,6 +85,7 @@
     } else={
         #:log info "before incrementing CNNCTTSTnumLostPackets"
         :set CNNCTTSTnumLostPackets ($CNNCTTSTnumLostPackets + 1)
+        /system/scheduler/set $CNNCTTSTscrptName interval=1s; # set to minimum interval
     }
 } else={
     #:log info "Ping successful"
