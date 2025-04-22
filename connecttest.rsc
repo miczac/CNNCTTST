@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address
-# version 1.1-20250421.1/mz
+# version 1.1-20250422.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=$CNNCTTSTscrptName disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # change interval with:  /system/scheduler/set $CNNCTTSTscrptName interval=3s
 # source it from https://github.com/miczac/CNNCTTST
@@ -37,6 +37,7 @@
 :global CNNCTTSTnumLostPackets
 :global CNNCTTSTlogIndivLine
 :global CNNCTTSTscrptName
+:global CNNCTTSTcurrIntvl [/system scheduler get [find name="WAN-Test"] interval]
 
 # init global variables just in case they are not set properly
 :if ([:typeof $CNNCTTSTdestIP] != "ip") do={:set CNNCTTSTdestIP $setupDestIP}
