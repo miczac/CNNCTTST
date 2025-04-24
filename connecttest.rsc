@@ -37,7 +37,7 @@
 :global CNNCTTSTnumLostPackets
 :global CNNCTTSTlogIndivLine
 :global CNNCTTSTscrptName
-:global CNNCTTSTcurrIntvl [/system scheduler get [find name="WAN-Test"] interval]
+:global CNNCTTSTcurrIntvl
 
 # init global variables just in case they are not set properly
 :if ([:typeof $CNNCTTSTdestIP] != "ip") do={:set CNNCTTSTdestIP $setupDestIP}
@@ -45,6 +45,7 @@
 :if ([:typeof $CNNCTTSTisOutage] != "bool") do={:set CNNCTTSTisOutage false} 
 :if ([:typeof $CNNCTTSTlogIndivLine] != "bool") do={:set CNNCTTSTlogIndivLine false} ; # if set 'true' outage start is logged individually
 :if ([:typeof $CNNCTTSTscrptName] != "str") do={:set CNNCTTSTscrptName $setupScrptName}
+:if ([:typeof $CNNCTTSTcurrIntvl] != "time") do={:set CNNCTTSTcurrIntvl [/system scheduler get [find name=$CNNCTTSTscrptName] interval]}
 
 :local nextHopOK [/ping $CNNCTTSTnextHopIP count=1]
 :if ($nextHopOK = 0) do={
