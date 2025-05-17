@@ -3,9 +3,9 @@
 :local newDIP
 :local PIP [ping ttl=$HOP count=1 $traceDestIP  as-value]
 :local CNT 0
-foreach V in $PIP do={
+:foreach V in $PIP do={
   #:put $V
-  :if ($CNT = 1) do={ ; # this seems to be dodgy because other values won't work!
+  :if ($CNT = 1) do={ ; # this seems to be dodgy because other values for CNT won't work!
     :set newDIP [:toip $V]
     :global typeConversionTST ([:typeof $V]."###".[:typeof $CNNCTTSTdestIP])
     :if ($newDIP != $traceDestIP) do={
