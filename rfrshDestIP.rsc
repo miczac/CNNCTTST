@@ -1,12 +1,16 @@
+# preliminary script for updating IP address of hop to test.
+# probably will be incorporated into connecttest.rsc
+# version 0.3-20250518.1/mz
+##
 :local HOP 2 
 :global CNNCTTSTdestIP
 :local traceDestIP 9.9.9.9
 :local newDIP
 :local PIP [ping ttl=$HOP count=1 $traceDestIP  as-value]
 :if (($PIP->"status") = "TTL exceeded") do={
-  :set newDIP [:toip ($PIP->"host")]
-  :if ($newDIP != $traceDestIP) do={
-  :set CNNCTTSTdestIP $newDIP
+    :set newDIP [:toip ($PIP->"host")]
+    :if ($newDIP != $traceDestIP) do={
+    :set CNNCTTSTdestIP $newDIP
   } else={
     :log info "-- WAN  newDIP  reset to $traceDestIP -> ignored"
   } 
