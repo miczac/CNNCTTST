@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address or hop
-# version 1.1-20250525.1/mz
+# version 1.1-20250525.2/mz
 # add to Scheduler with something like: /system/scheduler/add name=$CNNCTTSTscrptName disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # change interval with:  /system/scheduler/set $CNNCTTSTscrptName interval=3s
 # source it from https://github.com/miczac/CNNCTTST
@@ -32,7 +32,15 @@
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
 # setting up above:  ^ - - - - - - - - - - ^
 
-
+:local FncReverseString do={
+    :local inpStr $1
+    :local revdStr ""
+    :for i from=([:len $inpStr] - 1) to=0 do={
+        :set revdStr ($revdStr . [:pick $inpStr $i])
+    }
+    :return $revdStr
+}
+:local logMsgStr [$FncReverseString $revdMsgStr]
 
 :global CNNCTTSTdestIP ; # change IP-addresses you want to check to your needs in WinBox's environment! 
 :global CNNCTTSTnextHopIP
@@ -45,7 +53,7 @@
 
 # init global variables just in case they are not set properly
 :if ([:typeof $CNNCTTSTdestIP] != "ip") do={
-  :log info "-- WAN  |  type of CNNCTTSTdestIP -> [:typeof $CNNCTTSTdestIP], setting to  $setupDestIP"
+  :log info "$logMsgStr  |  type of CNNCTTSTdestIP -> [:typeof $CNNCTTSTdestIP], setting to  $setupDestIP"
   :set CNNCTTSTdestIP $setupDestIP
 }
 :if ([:typeof $CNNCTTSTnextHopIP] != "ip") do={:set CNNCTTSTnextHopIP $setupNextHopIP}
@@ -67,16 +75,6 @@
 }
 
 # else continue testing $CNNCTTSTdestIP in main section
-
-:local FrevString do={      # function, reverses given string
-    :local inpStr $1
-    :local revdStr ""
-    :for i from=([:len $inpStr] - 1) to=0 do={
-        :set revdStr ($revdStr . [:pick $inpStr $i])
-    }
-    :return $revdStr
-}
-:local logMsgStr [$FrevString $revdMsgStr]
 
 :local pingResult [/ping $CNNCTTSTdestIP count=1];
 #:log info "Ping result: $pingResult"
