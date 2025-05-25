@@ -1,5 +1,5 @@
 # tests a layer 3 network connection via ping to a designated IP address or hop
-# version 1.1-20250504.1/mz
+# version 1.1-20250525.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=$CNNCTTSTscrptName disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # change interval with:  /system/scheduler/set $CNNCTTSTscrptName interval=3s
 # source it from https://github.com/miczac/CNNCTTST
@@ -44,7 +44,10 @@
 :global CNNCTTSTcurrIntvl
 
 # init global variables just in case they are not set properly
-:if ([:typeof $CNNCTTSTdestIP] != "ip") do={:set CNNCTTSTdestIP $setupDestIP}
+:if ([:typeof $CNNCTTSTdestIP] != "ip") do={
+  :log info "-- WAN  |  type of CNNCTTSTdestIP -> [:typeof $CNNCTTSTdestIP], setting to  $setupDestIP"
+  :set CNNCTTSTdestIP $setupDestIP
+}
 :if ([:typeof $CNNCTTSTnextHopIP] != "ip") do={:set CNNCTTSTnextHopIP $setupNextHopIP}
 :if ([:typeof $CNNCTTSTisOutage] != "bool") do={:set CNNCTTSTisOutage false} 
 :if ([:typeof $CNNCTTSTlogIndivLine] != "bool") do={:set CNNCTTSTlogIndivLine false} ; # if set 'true' outage start is logged individually
