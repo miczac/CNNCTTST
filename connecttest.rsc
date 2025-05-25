@@ -1,5 +1,5 @@
-# tests a layer 3 network connection via ping to a designated IP address
-# version 1.1-20250422.1/mz
+# tests a layer 3 network connection via ping to a designated IP address or hop
+# version 1.1-20250504.1/mz
 # add to Scheduler with something like: /system/scheduler/add name=$CNNCTTSTscrptName disabled=yes on-event="/system script run \"connecttest.rsc\"" interval=3
 # change interval with:  /system/scheduler/set $CNNCTTSTscrptName interval=3s
 # source it from https://github.com/miczac/CNNCTTST
@@ -18,10 +18,12 @@
 # consider: changing all debug msgs to log to global variables. Would probably need some management.
 # consider: writing log msgs to separate log (file?)
 # consider: a mode switch which let the script itself run in a loop and won't need a scheduler. Which wouldn't be as accurate.
-# consider: better names for local and global variables, esp. for debugging!
 # consider: un-setting (removing) nextHopERROR, when next hop is back online 
 # note: something like this surely exists somewhere already, doesn't it? (if so, consider this an exercise!)
-# note: it seems my hAP ac³ has no battery for its clock. So upon boot the time remains largely at the one from shutdown.
+# note: Mikrotik's hAP ac³ has no battery for its clock. So upon boot the time remains largely at the one from shutdown.
+# note: future function to fetch DestIP
+# :local HOP 2; :local PIP [ping ttl=$HOP count=1 9.9.9.9 as-value]; :local CNT 0; foreach V in $PIP do={:put $V; if ($CNT = 1) do={:global  CNNCTTSTdestIP [:toip $V]; :put ([:typeof $V]."###".[:typeof $CNNCTTSTdestIP])}; :set CNT ($CNT+1)} 
+# :local HOP 2; :local PIP [ping ttl=$HOP count=1 9.9.9.9 as-value]; :local CNT 0; foreach V in $PIP do={:put $V; if ($CNT = 1) do={:global CNNCTTSTdestIPx [:toip ($V."1")]; :put ([:typeof $V]." --> ".[:typeof $CNNCTTSTdestIPx])}; :set CNT ($CNT+1)} ; # needs to check result of IP-convertion! 
 
 # setting up below:  v - - - - - - - - - - v 
 :local setupScrptName "ConnTest";      # adapt, but this must be used for its corresponding scheduler entry!
@@ -29,6 +31,8 @@
 :local setupNextHopIP 192.168.0.1;     # insert the next hop's IP towards $setupDestIP here!
 :local revdMsgStr "noitcennoc NAW --"; # start of log-msg reversed for cleaner find in logs
 # setting up above:  ^ - - - - - - - - - - ^
+
+
 
 :global CNNCTTSTdestIP ; # change IP-addresses you want to check to your needs in WinBox's environment! 
 :global CNNCTTSTnextHopIP
