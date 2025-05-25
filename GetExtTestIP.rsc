@@ -1,6 +1,5 @@
-# this doesn't work since traceroute wouldn't hand over a useable text output!
 :global ExtTestIP
-:local troutput [/tool traceroute address=9.9.9.9 max-hops=5 count=1]
+:local troutput [/tool traceroute address=9.9.9.9 max-hops=5 count=1 as-value]
 :local hopCount 0
 :log info "Init Hop $hopCount"
 :foreach i in=$troutput do={
