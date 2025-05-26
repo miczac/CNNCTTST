@@ -1,7 +1,18 @@
 # preliminary script for updating IP address of hop to test.
 # probably will be incorporated into connecttest.rsc
-# version 0.3-20250518.1/mz
+# version 0.1-20250526.1/mz
 ##
+:local FncReverseString do={
+    :local inpStr $1
+    :local revdStr ""
+    :for i from=([:len $inpStr] - 1) to=0 do={
+        :set revdStr ($revdStr . [:pick $inpStr $i])
+    }
+    :return $revdStr
+}
+:local logMsgStr [$FncReverseString $revdMsgStr]
+
+:local revdMsgStr "NAW --"
 :local HOP 2 
 :global CNNCTTSTdestIP
 :local traceDestIP 9.9.9.9
@@ -12,7 +23,7 @@
     :if ($newDIP != $traceDestIP) do={
     :set CNNCTTSTdestIP $newDIP
   } else={
-    :log info "-- WAN  newDIP  reset to $traceDestIP -> ignored"
+    :log info "$revdMsgStr  newDIP  reset to $traceDestIP -> ignored"
   } 
 }
 
